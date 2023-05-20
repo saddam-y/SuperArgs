@@ -19,6 +19,27 @@ public class ArgsTest {
 
 
     @Test
+    void testNotAvailableValueListForIntPresent() throws Exception {
+
+        var exception = assertThrows(ArgsException.class, () -> new Args("x#", new String[]{"-x", "12 24 324"}));
+        testArgsException(exception, 'x', "12 24 324", NOT_AVAILABLE_VALUE_LIST);
+    }
+
+    @Test
+    void testAvailableValueListForIntPresent() throws Exception {
+        var args = new Args("x#[]", new String[]{"-x", "12 24 324"});
+        var valueList = args.getIntList('x');
+
+        assertAll(
+                () -> assertEquals(3, valueList.size()),
+                () -> assertEquals(12, valueList.get(0)),
+                () -> assertEquals(24, valueList.get(1)),
+                () -> assertEquals(324, valueList.get(2))
+        );
+    }
+
+
+    @Test
     public void testWithNoSchemaButWithOneArgument() throws Exception {
         try {
             new Args("", new String[]{"-x"});
@@ -199,5 +220,14 @@ public class ArgsTest {
         assertTrue(args.getBoolean('x'));
         assertFalse(args.getBoolean('y'));
         assertEquals(1, args.nextArgument());
+    }
+
+
+    public void testArgsException(ArgsException exception, char errorArgumentId, String errorParameter, ArgsException.ErrorCode errorCode) {
+        assertAll(
+                () -> assertEquals(errorArgumentId, exception.getErrorArgumentId()),
+                () -> assertEquals(errorParameter, exception.getErrorParameter()),
+                () -> assertEquals(errorCode, exception.getErrorCode())
+        );
     }
 }

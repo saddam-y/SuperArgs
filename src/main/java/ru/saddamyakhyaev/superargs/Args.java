@@ -24,13 +24,17 @@ public class Args {
     private void parseSchemaElement(String element) throws ArgsException {
         char elementId = element.charAt(0);
         String elementTail = element.substring(1);
+        boolean isValueList = elementTail.contains("[]");
+        if(isValueList) {
+            elementTail = elementTail.replace("[]", "");
+        }
         validateSchemaElementId(elementId);
         if (elementTail.length() == 0)
             marshalers.put(elementId, new BooleanArgumentMarshaler());
         else if (elementTail.equals("*"))
             marshalers.put(elementId, new StringArgumentMarshaler());
         else if (elementTail.equals("#"))
-            marshalers.put(elementId, new IntegerArgumentMarshaler());
+            marshalers.put(elementId, new IntegerArgumentMarshaler(isValueList));
         else if (elementTail.equals("##"))
             marshalers.put(elementId, new DoubleArgumentMarshaler());
         else if (elementTail.equals("[*]"))
@@ -95,6 +99,10 @@ public class Args {
 
     public int getInt(char arg) {
         return IntegerArgumentMarshaler.getValue(marshalers.get(arg));
+    }
+
+    public List<Integer> getIntList(char arg) {
+        return IntegerArgumentMarshaler.getValues(marshalers.get(arg));
     }
 
     public double getDouble(char arg) {

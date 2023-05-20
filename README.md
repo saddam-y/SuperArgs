@@ -17,3 +17,7 @@ After the tests, I will change the project. I will record each step for clarity.
 I edited the logical StringArrayArgumentMarshaler class, because it has to add to the array every argument passed to the method set
 I edited throw exception from StringArrayArgumentMarshaler, DoubleArgumentMarshaler because there was a problem there
 I pass errorParameter to constructor ArgsException when necessary
+
+### Added feature to create list of values for IntegerArgumentMarshaler
+After that I want to add this feature other ArgumentMarshaler classes
+I have also written some tests for this function
