@@ -1,16 +1,12 @@
 package ru.saddamyakhyaev.superargs;
 
 import java.util.*;
-import java.util.stream.Stream;
 
-public class IntegerArgumentMarshaler implements ArgumentMarshaler {
-    private final List<Integer> values;
-    private final boolean availableValuesList;
+public class IntegerArgumentMarshaler extends ArgumentMarshaler<Integer> {
 
 
-    public IntegerArgumentMarshaler(boolean availableValuesList) {
-        this.availableValuesList = availableValuesList;
-        this.values = new ArrayList<>();
+    public IntegerArgumentMarshaler(boolean availableValuesList, boolean required) {
+        super(availableValuesList, required);
     }
 
     public void set(Iterator<String> currentArgument) throws ArgsException {
@@ -29,23 +25,6 @@ public class IntegerArgumentMarshaler implements ArgumentMarshaler {
         }
     }
 
-    public static int getValue(ArgumentMarshaler am) {
-        if (am instanceof IntegerArgumentMarshaler integerArgumentMarshaler)
-            return integerArgumentMarshaler.values.get(0);
-        else
-            return 0;
-    }
-
-    public static List<Integer> getValues(ArgumentMarshaler am) {
-        if (am instanceof IntegerArgumentMarshaler integerArgumentMarshaler) {
-            return integerArgumentMarshaler.values;
-        }else
-            return Collections.emptyList();
-    }
-
-    public boolean isAvailableValuesList() {
-        return availableValuesList;
-    }
 
 
 

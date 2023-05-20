@@ -1,15 +1,11 @@
 package ru.saddamyakhyaev.superargs;
 
 import java.util.*;
-import java.util.stream.Stream;
 
-public class DoubleArgumentMarshaler implements ArgumentMarshaler {
-    private final List<Double> values;
-    private final boolean availableValuesList;
+public class DoubleArgumentMarshaler extends ArgumentMarshaler<Double> {
 
-    public DoubleArgumentMarshaler(boolean availableValuesList) {
-        this.availableValuesList = availableValuesList;
-        this.values = new ArrayList<>();
+    public DoubleArgumentMarshaler(boolean availableValuesList, boolean required) {
+        super(availableValuesList, required);
     }
 
     @Override
@@ -29,22 +25,4 @@ public class DoubleArgumentMarshaler implements ArgumentMarshaler {
         }
     }
 
-    @Override
-    public boolean isAvailableValuesList() {
-        return availableValuesList;
-    }
-
-    public static Double getValue(ArgumentMarshaler am) {
-        if (am != null && am instanceof DoubleArgumentMarshaler doubleArgumentMarshaler)
-            return doubleArgumentMarshaler.values.get(0);
-        else
-            return 0.0;
-    }
-
-    public static List<Double> getValues(ArgumentMarshaler am) {
-        if (am instanceof DoubleArgumentMarshaler doubleArgumentMarshaler) {
-            return doubleArgumentMarshaler.values;
-        }else
-            return Collections.emptyList();
-    }
 }

@@ -2,23 +2,16 @@ package ru.saddamyakhyaev.superargs;
 
 import java.util.Iterator;
 
-public class BooleanArgumentMarshaler implements ArgumentMarshaler {
-    private boolean booleanValue = false;
+public class BooleanArgumentMarshaler extends ArgumentMarshaler<Boolean> {
+
+    public BooleanArgumentMarshaler(boolean required) {
+       super(false, required);
+       values.add(false);
+    }
 
     @Override
     public void set(Iterator<String> currentArgument) throws ArgsException {
-        booleanValue = true;
+        values.add(0, true);
     }
 
-    @Override
-    public boolean isAvailableValuesList() {
-        return false;
-    }
-
-    public static boolean getValue(ArgumentMarshaler am) {
-        if (am != null && am instanceof BooleanArgumentMarshaler)
-            return ((BooleanArgumentMarshaler) am).booleanValue;
-        else
-            return false;
-    }
 }

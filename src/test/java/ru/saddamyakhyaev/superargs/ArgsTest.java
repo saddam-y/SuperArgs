@@ -18,6 +18,11 @@ public class ArgsTest {
         assertEquals(0, args.nextArgument());
     }
 
+    @Test
+    void testNotRequirementAreNotMet() throws Exception {
+        var exception = assertThrows(ArgsException.class, () -> new Args("x#,y#!", new String[]{"-x", "4", }));
+        ArgsTest.testArgsException(exception, 'y', null, REQUIREMENT_ARE_NOT_MET);
+    }
 
     @Test
     public void testWithNoSchemaButWithOneArgument() throws Exception {

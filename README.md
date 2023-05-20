@@ -29,3 +29,9 @@ First, I am removing StringArrayArgumentMarshaler class because just StringArgum
 I edited class IntegerArgumentMarshaler, because I don't split argument anymore
 After that I added the same logic to other classes
 I also created a new test class to test exactly these functions (ArgsValuesListTest) and wrote test for each class
+
+
+### I moved common methods to the abstract class ArgumentMarshaler and I added feature for the required arguments
+
+I decided to create abstract class because many methods and fields were commons to classes implement ArgumentMarshaler
+I have also written some tests for this function

@@ -13,6 +13,8 @@ public class Args {
 
         parseSchema(schema);
         parseArgumentStrings(Arrays.asList(args));
+
+        requirementsAreMet();
     }
 
     private void parseSchema(String schema) throws ArgsException {
@@ -25,18 +27,22 @@ public class Args {
         char elementId = element.charAt(0);
         String elementTail = element.substring(1);
         boolean isValueList = elementTail.contains("[]");
+        boolean isRequired = elementTail.contains("!");
         if(isValueList) {
             elementTail = elementTail.replace("[]", "");
         }
+        if(isRequired) {
+            elementTail = elementTail.replace("!", "");
+        }
         validateSchemaElementId(elementId);
         if (elementTail.length() == 0)
-            marshalers.put(elementId, new BooleanArgumentMarshaler());
+            marshalers.put(elementId, new BooleanArgumentMarshaler(isRequired));
         else if (elementTail.equals("*"))
-            marshalers.put(elementId, new StringArgumentMarshaler(isValueList));
+            marshalers.put(elementId, new StringArgumentMarshaler(isValueList, isRequired));
         else if (elementTail.equals("#"))
-            marshalers.put(elementId, new IntegerArgumentMarshaler(isValueList));
+            marshalers.put(elementId, new IntegerArgumentMarshaler(isValueList, isRequired));
         else if (elementTail.equals("##"))
-            marshalers.put(elementId, new DoubleArgumentMarshaler(isValueList));
+            marshalers.put(elementId, new DoubleArgumentMarshaler(isValueList, isRequired));
         else
             throw new ArgsException(ArgsException.ErrorCode.INVALID_ARGUMENT_FORMAT, elementId, elementTail);
     }
@@ -65,7 +71,7 @@ public class Args {
     }
 
     private void parseArgumentCharacter(char argChar) throws ArgsException {
-        ArgumentMarshaler m = marshalers.get(argChar);
+        var m = marshalers.get(argChar);
         if (m == null) {
             throw new ArgsException(ArgsException.ErrorCode.UNEXPECTED_ARGUMENT, argChar, null);
         } else {
@@ -79,6 +85,15 @@ public class Args {
         }
     }
 
+    public void requirementsAreMet() throws ArgsException {
+        for(var key: marshalers.keySet()) {
+            var m = marshalers.get(key);
+            if(m.isRequired() && m.getValues().size() == 0) {
+                throw new ArgsException(ArgsException.ErrorCode.REQUIREMENT_ARE_NOT_MET, key, null);
+            }
+        }
+    }
+
     public boolean has(char arg) {
         return argsFound.contains(arg);
     }
@@ -87,31 +102,59 @@ public class Args {
         return currentArgument.nextIndex();
     }
 
-    public boolean getBoolean(char arg) {
-        return BooleanArgumentMarshaler.getValue(marshalers.get(arg));
+    public boolean getBoolean(char arg) throws ArgsException {
+        if(marshalers.get(arg) instanceof BooleanArgumentMarshaler booleanArgumentMarshaler){
+            return booleanArgumentMarshaler.getValue();
+        } else {
+            throw new ArgsException(ArgsException.ErrorCode.UNEXPECTED_ARGUMENT, arg, null);
+        }
     }
 
-    public String getString(char arg) {
-        return StringArgumentMarshaler.getValue(marshalers.get(arg));
+    public String getString(char arg) throws ArgsException {
+        if(marshalers.get(arg) instanceof StringArgumentMarshaler stringArgumentMarshaler){
+            return stringArgumentMarshaler.getValue();
+        } else {
+            throw new ArgsException(ArgsException.ErrorCode.UNEXPECTED_ARGUMENT, arg, null);
+        }
     }
-    public List<String> getStringList(char arg) {
-        return StringArgumentMarshaler.getValues(marshalers.get(arg));
-    }
-
-    public int getInt(char arg) {
-        return IntegerArgumentMarshaler.getValue(marshalers.get(arg));
-    }
-
-    public List<Integer> getIntList(char arg) {
-        return IntegerArgumentMarshaler.getValues(marshalers.get(arg));
-    }
-
-    public double getDouble(char arg) {
-        return DoubleArgumentMarshaler.getValue(marshalers.get(arg));
+    public List<String> getStringList(char arg) throws ArgsException {
+        if(marshalers.get(arg) instanceof StringArgumentMarshaler stringArgumentMarshaler){
+            return stringArgumentMarshaler.getValues();
+        } else {
+            throw new ArgsException(ArgsException.ErrorCode.UNEXPECTED_ARGUMENT, arg, null);
+        }
     }
 
-    public List<Double> getDoubleList(char arg) {
-        return DoubleArgumentMarshaler.getValues(marshalers.get(arg));
+    public int getInt(char arg) throws ArgsException {
+        if(marshalers.get(arg) instanceof IntegerArgumentMarshaler integerArgumentMarshaler){
+            return integerArgumentMarshaler.getValue();
+        } else {
+            throw new ArgsException(ArgsException.ErrorCode.UNEXPECTED_ARGUMENT, arg, null);
+        }
+    }
+
+    public List<Integer> getIntList(char arg) throws ArgsException {
+        if(marshalers.get(arg) instanceof IntegerArgumentMarshaler integerArgumentMarshaler){
+            return integerArgumentMarshaler.getValues();
+        } else {
+            throw new ArgsException(ArgsException.ErrorCode.UNEXPECTED_ARGUMENT, arg, null);
+        }
+    }
+
+    public double getDouble(char arg) throws ArgsException {
+        if(marshalers.get(arg) instanceof DoubleArgumentMarshaler doubleArgumentMarshaler){
+            return doubleArgumentMarshaler.getValue();
+        } else {
+            throw new ArgsException(ArgsException.ErrorCode.UNEXPECTED_ARGUMENT, arg, null);
+        }
+    }
+
+    public List<Double> getDoubleList(char arg) throws ArgsException {
+        if(marshalers.get(arg) instanceof DoubleArgumentMarshaler doubleArgumentMarshaler){
+            return doubleArgumentMarshaler.getValues();
+        } else {
+            throw new ArgsException(ArgsException.ErrorCode.UNEXPECTED_ARGUMENT, arg, null);
+        }
     }
 
 }

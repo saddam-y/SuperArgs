@@ -12,7 +12,7 @@ public class ArgsValuesListTest {
     @Test
     void testNotAvailableValueListForIntPresent() throws Exception {
 
-        var exception = assertThrows(ArgsException.class, () -> new Args("x#", new String[]{"-x", "12", "-x", "12"}));
+        var exception = assertThrows(ArgsException.class, () -> new Args("x#", new String[]{"-x", "4", "-x", "12"}));
         ArgsTest.testArgsException(exception, 'x', "12", NOT_AVAILABLE_VALUE_LIST);
     }
 
