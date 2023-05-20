@@ -4,22 +4,23 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class IntegerArgumentMarshaler implements ArgumentMarshaler {
-    private List<Integer> values = new ArrayList<>();
-    private boolean availableValuesList = true;
+    private final List<Integer> values;
+    private final boolean availableValuesList;
 
 
     public IntegerArgumentMarshaler(boolean availableValuesList) {
         this.availableValuesList = availableValuesList;
+        this.values = new ArrayList<>();
     }
 
     public void set(Iterator<String> currentArgument) throws ArgsException {
         String parameter = null;
         try {
             parameter = currentArgument.next();
-            if(!isAvailableValuesList() && (parameter.split("\\s").length > 1 || values.size() > 0)) {
+            if(!isAvailableValuesList() && values.size() > 0) {
                 throw new ArgsException(ArgsException.ErrorCode.NOT_AVAILABLE_VALUE_LIST, parameter);
             }else {
-                values.addAll(Stream.of(parameter.split("\\s")).map(Integer::valueOf).toList());
+                values.add(Integer.valueOf(parameter));
             }
         } catch (NoSuchElementException e) {
             throw new ArgsException(ArgsException.ErrorCode.MISSING_INTEGER, parameter);
@@ -29,15 +30,15 @@ public class IntegerArgumentMarshaler implements ArgumentMarshaler {
     }
 
     public static int getValue(ArgumentMarshaler am) {
-        if (am instanceof IntegerArgumentMarshaler)
-            return ((IntegerArgumentMarshaler) am).values.get(0);
+        if (am instanceof IntegerArgumentMarshaler integerArgumentMarshaler)
+            return integerArgumentMarshaler.values.get(0);
         else
             return 0;
     }
 
     public static List<Integer> getValues(ArgumentMarshaler am) {
-        if (am instanceof IntegerArgumentMarshaler intArrayAm) {
-            return intArrayAm.values;
+        if (am instanceof IntegerArgumentMarshaler integerArgumentMarshaler) {
+            return integerArgumentMarshaler.values;
         }else
             return Collections.emptyList();
     }

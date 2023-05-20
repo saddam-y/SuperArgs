@@ -32,13 +32,11 @@ public class Args {
         if (elementTail.length() == 0)
             marshalers.put(elementId, new BooleanArgumentMarshaler());
         else if (elementTail.equals("*"))
-            marshalers.put(elementId, new StringArgumentMarshaler());
+            marshalers.put(elementId, new StringArgumentMarshaler(isValueList));
         else if (elementTail.equals("#"))
             marshalers.put(elementId, new IntegerArgumentMarshaler(isValueList));
         else if (elementTail.equals("##"))
-            marshalers.put(elementId, new DoubleArgumentMarshaler());
-        else if (elementTail.equals("[*]"))
-            marshalers.put(elementId, new StringArrayArgumentMarshaler());
+            marshalers.put(elementId, new DoubleArgumentMarshaler(isValueList));
         else
             throw new ArgsException(ArgsException.ErrorCode.INVALID_ARGUMENT_FORMAT, elementId, elementTail);
     }
@@ -96,6 +94,9 @@ public class Args {
     public String getString(char arg) {
         return StringArgumentMarshaler.getValue(marshalers.get(arg));
     }
+    public List<String> getStringList(char arg) {
+        return StringArgumentMarshaler.getValues(marshalers.get(arg));
+    }
 
     public int getInt(char arg) {
         return IntegerArgumentMarshaler.getValue(marshalers.get(arg));
@@ -109,8 +110,9 @@ public class Args {
         return DoubleArgumentMarshaler.getValue(marshalers.get(arg));
     }
 
-    public String[] getStringArray(char arg) {
-        return StringArrayArgumentMarshaler.getValue(marshalers.get(arg));
+    public List<Double> getDoubleList(char arg) {
+        return DoubleArgumentMarshaler.getValues(marshalers.get(arg));
     }
+
 }
 

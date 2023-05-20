@@ -3,6 +3,7 @@ package ru.saddamyakhyaev.superargs;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,27 +16,6 @@ public class ArgsTest {
     public void testCreateWithNoSchemaOrArguments() throws Exception {
         Args args = new Args("", new String[0]);
         assertEquals(0, args.nextArgument());
-    }
-
-
-    @Test
-    void testNotAvailableValueListForIntPresent() throws Exception {
-
-        var exception = assertThrows(ArgsException.class, () -> new Args("x#", new String[]{"-x", "12 24 324"}));
-        testArgsException(exception, 'x', "12 24 324", NOT_AVAILABLE_VALUE_LIST);
-    }
-
-    @Test
-    void testAvailableValueListForIntPresent() throws Exception {
-        var args = new Args("x#[]", new String[]{"-x", "12 24 324"});
-        var valueList = args.getIntList('x');
-
-        assertAll(
-                () -> assertEquals(3, valueList.size()),
-                () -> assertEquals(12, valueList.get(0)),
-                () -> assertEquals(24, valueList.get(1)),
-                () -> assertEquals(324, valueList.get(2))
-        );
     }
 
 
@@ -176,11 +156,11 @@ public class ArgsTest {
 
     @Test
     public void testStringArray() throws Exception {
-        Args args = new Args("x[*]", new String[]{"-x", "alpha"});
+        Args args = new Args("x*[]", new String[]{"-x", "alpha"});
         assertTrue(args.has('x'));
-        String[] result = args.getStringArray('x');
-        assertEquals(1, result.length);
-        assertEquals("alpha", result[0]);
+        List<String> result = args.getStringList('x');
+        assertEquals(1, result.size());
+        assertEquals("alpha", result.get(0));
     }
 
     @Test
@@ -192,15 +172,15 @@ public class ArgsTest {
     @Test
     public void manyStringArrayElements() throws Exception {
 
-        Args args = new Args("x[*]", new String[]{"-x", "alpha", "-x", "beta", "-x", "gamma"});
-        String[] result = args.getStringArray('x');
+        Args args = new Args("x*[]", new String[]{"-x", "alpha", "-x", "beta", "-x", "gamma"});
+        List<String> result = args.getStringList('x');
 
         assertAll(
                 () -> assertTrue(args.has('x')),
-                () -> assertEquals(3, result.length),
-                () -> assertEquals("alpha", result[0]),
-                () -> assertEquals("beta", result[1]),
-                () -> assertEquals("gamma", result[2])
+                () -> assertEquals(3, result.size()),
+                () -> assertEquals("alpha", result.get(0)),
+                () -> assertEquals("beta", result.get(1)),
+                () -> assertEquals("gamma", result.get(2))
         );
     }
 
@@ -223,7 +203,7 @@ public class ArgsTest {
     }
 
 
-    public void testArgsException(ArgsException exception, char errorArgumentId, String errorParameter, ArgsException.ErrorCode errorCode) {
+    public static void testArgsException(ArgsException exception, char errorArgumentId, String errorParameter, ArgsException.ErrorCode errorCode) {
         assertAll(
                 () -> assertEquals(errorArgumentId, exception.getErrorArgumentId()),
                 () -> assertEquals(errorParameter, exception.getErrorParameter()),
