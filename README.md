@@ -10,3 +10,10 @@ After the tests, I will change the project. I will record each step for clarity.
 
 **Thanks for your attention**
 
+## Commits
+
+### Edited in order for the tests to work out
+
+I edited the logical StringArrayArgumentMarshaler class, because it has to add to the array every argument passed to the method set
+I edited throw exception from StringArrayArgumentMarshaler, DoubleArgumentMarshaler because there was a problem there
+I pass errorParameter to constructor ArgsException when necessary
