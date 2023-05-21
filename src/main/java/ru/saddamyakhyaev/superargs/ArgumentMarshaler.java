@@ -24,7 +24,7 @@ public abstract class ArgumentMarshaler <T> {
     }
 
     protected T getValue() {
-       return values.get(0);
+       return values.size() != 0? values.get(0): null;
     }
 
     protected List<T> getValues() {

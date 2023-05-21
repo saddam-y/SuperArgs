@@ -35,3 +35,7 @@ I also created a new test class to test exactly these functions (ArgsValuesListT
 
 I decided to create abstract class because many methods and fields were commons to classes implement ArgumentMarshaler
 I have also written some tests for this function
+
+
+### Added class ArgsSchema for convenient work with schema 
+I have also written some tests for this class

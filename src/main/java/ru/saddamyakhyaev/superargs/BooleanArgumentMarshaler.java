@@ -1,6 +1,7 @@
 package ru.saddamyakhyaev.superargs;
 
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 public class BooleanArgumentMarshaler extends ArgumentMarshaler<Boolean> {
 

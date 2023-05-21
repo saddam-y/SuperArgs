@@ -1,9 +1,10 @@
 package ru.saddamyakhyaev.superargs;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Args {
-    private final Map<Character, ArgumentMarshaler> marshalers;
+    private Map<Character, ArgumentMarshaler> marshalers;
     private Set<Character> argsFound;
     private ListIterator<String> currentArgument;
 
@@ -12,6 +13,16 @@ public class Args {
         argsFound = new HashSet<Character>();
 
         parseSchema(schema);
+        parseArgumentStrings(Arrays.asList(args));
+
+        requirementsAreMet();
+    }
+
+    public Args(ArgsSchema argsSchema, String[] args) throws ArgsException {
+        marshalers = new HashMap<Character, ArgumentMarshaler>();
+        argsFound = new HashSet<Character>();
+
+        parseSchema(argsSchema.getSchemaString());
         parseArgumentStrings(Arrays.asList(args));
 
         requirementsAreMet();
@@ -26,8 +37,8 @@ public class Args {
     private void parseSchemaElement(String element) throws ArgsException {
         char elementId = element.charAt(0);
         String elementTail = element.substring(1);
-        boolean isValueList = elementTail.contains("[]");
-        boolean isRequired = elementTail.contains("!");
+        boolean isValueList = elementTail.contains(ArgsSchema.ArgumentField.VALUES_LIST.getKey());
+        boolean isRequired = elementTail.contains(ArgsSchema.ArgumentField.REQUIRED.getKey());
         if(isValueList) {
             elementTail = elementTail.replace("[]", "");
         }
@@ -35,13 +46,13 @@ public class Args {
             elementTail = elementTail.replace("!", "");
         }
         validateSchemaElementId(elementId);
-        if (elementTail.length() == 0)
+        if (elementTail.equals(ArgsSchema.ArgumentType.BOOLEAN.getKey()))
             marshalers.put(elementId, new BooleanArgumentMarshaler(isRequired));
-        else if (elementTail.equals("*"))
+        else if (elementTail.equals(ArgsSchema.ArgumentType.STRING.getKey()))
             marshalers.put(elementId, new StringArgumentMarshaler(isValueList, isRequired));
-        else if (elementTail.equals("#"))
+        else if (elementTail.equals(ArgsSchema.ArgumentType.INT.getKey()))
             marshalers.put(elementId, new IntegerArgumentMarshaler(isValueList, isRequired));
-        else if (elementTail.equals("##"))
+        else if (elementTail.equals(ArgsSchema.ArgumentType.DOUBLE.getKey()))
             marshalers.put(elementId, new DoubleArgumentMarshaler(isValueList, isRequired));
         else
             throw new ArgsException(ArgsException.ErrorCode.INVALID_ARGUMENT_FORMAT, elementId, elementTail);
@@ -102,7 +113,7 @@ public class Args {
         return currentArgument.nextIndex();
     }
 
-    public boolean getBoolean(char arg) throws ArgsException {
+    public Boolean getBoolean(char arg) throws ArgsException {
         if(marshalers.get(arg) instanceof BooleanArgumentMarshaler booleanArgumentMarshaler){
             return booleanArgumentMarshaler.getValue();
         } else {
